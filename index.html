@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>System Update…</title>
+  <style>
+    :root{
+      --bg:#0f172a;         
+      --panel:#111827;      
+      --muted:#94a3b8;      
+      --text:#e5e7eb;       
+      --brand:#60a5fa;      
+      --good:#22c55e;       
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; display:grid; place-items:center;
+      background:radial-gradient(1200px 800px at 50% -20%, #1f2937 0%, var(--bg) 60%);
+      color:var(--text); font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
+    }
+    .card{
+      width:min(95vw,780px);
+      background:linear-gradient(180deg, #0b1222 0%, var(--panel) 100%);
+      border:1px solid #1f2937; border-radius:18px; padding:28px 24px; box-shadow:0 20px 60px rgba(0,0,0,.35);
+      text-align:center;
+    }
+    h1{margin:0 0 12px;font-size:clamp(22px,4vw,28px);font-weight:700}
+    .sub{color:var(--muted); font-size:14px;margin-bottom:20px}
+
+    #screenPin input{
+      padding:12px; border-radius:8px; border:1px solid #1f2a3a;
+      background:#0b1220; color:var(--text); font-size:16px; text-align:center;
+      width:160px;
+    }
+    #screenPin button{
+      margin-top:14px; padding:10px 16px; border:none; border-radius:8px;
+      background:var(--brand); color:white; font-weight:600; cursor:pointer;
+    }
+    #screenPin button:active{transform:translateY(1px)}
+
+    .bar{position:relative; height:18px; border-radius:100px; background:#0b1220; overflow:hidden; border:1px solid #1f2a3a; margin-top:18px}
+    .bar > span{
+      position:absolute; inset:0 100% 0 0; background:linear-gradient(90deg,#2563eb,#60a5fa,#93c5fd);
+      border-radius:100px; box-shadow:0 0 24px rgba(96,165,250,.6) inset;
+      transition:inset .25s ease;
+    }
+    .perc{margin-top:10px; color:#cbd5e1; font-variant-numeric:tabular-nums}
+    .list{margin-top:16px; color:#a7b0bf; font-size:14px; text-align:left}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <!-- PIN screen -->
+  <section class="card" id="screenPin">
+    <h1>🔒 Enter PIN</h1>
+    <div class="sub">Authorized access required</div>
+    <input type="password" id="pinInput" placeholder="••••" maxlength="6">
+    <br>
+    <button onclick="checkPin()">Unlock</button>
+    <p id="pinMsg" style="color:#f87171;display:none;margin-top:10px">Incorrect PIN</p>
+  </section>
+
+  <!-- Update screen -->
+  <main class="card hidden" id="screenUpdate">
+    <h1>Installing critical system update…</h1>
+    <div class="sub">Please keep this tab open. Your device may restart.</div>
+    <div class="bar"><span id="fill"></span></div>
+    <div class="perc"><span id="pct">0</span>% complete</div>
+    <ul class="list" id="log"></ul>
+  </main>
+
+  <script>
+    const CORRECT_PIN = "1234"; 
+    const pinScreen = document.getElementById("screenPin");
+    const updateScreen = document.getElementById("screenUpdate");
+    const fill = document.getElementById("fill");
+    const pct  = document.getElementById("pct");
+    const log  = document.getElementById("log");
+
+    function checkPin(){
+      const pin = document.getElementById("pinInput").value;
+      if(pin === CORRECT_PIN){
+        pinScreen.classList.add("hidden");
+        updateScreen.classList.remove("hidden");
+        startUpdate();
+      } else {
+        document.getElementById("pinMsg").style.display="block";
+      }
+    }
+
+    const steps = [
+      "Checking system integrity…",
+      "Downloading components…",
+      "Verifying checksums…",
+      "Installing modules…",
+      "Optimizing performance…",
+      "Rebuilding cache…",
+      "Cleaning up…",
+      "Finalizing…"
+    ];
+
+    let p = 0, step = 0;
+    function startUpdate(){
+      function tick(){
+        const jump = Math.min(100 - p, Math.ceil(Math.random()*7));
+        p += jump;
+        pct.textContent = p;
+        fill.style.inset = `0 ${100-p}% 0 0`;
+        if (Math.random()>0.5 && step < steps.length){
+          const li = document.createElement('li');
+          li.textContent = steps[step++];
+          log.appendChild(li);
+        }
+        if (p < 100) {
+          setTimeout(tick, 300 + Math.random()*600);
+        } else {
+          setTimeout(() => {
+            // redirect to your portfolio
+            window.location.href = "https://omki-ajs-projects-e2cceb2d.vercel.app/";
+          }, 1500);
+        }
+      }
+      tick();
+    }
+  </script>
+</body>
+</html>
